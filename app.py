@@ -15,5 +15,8 @@ def create_app():
 if __name__ == '__main__':
     app = create_app()
     import routes
+    app.config['JWT_SECRET_KEY'] = 'secret'
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=1)
+    jwt = JWTManager(app)
     
     app.run(debug=True)
