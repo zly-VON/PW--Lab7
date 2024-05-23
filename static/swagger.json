@@ -1,0 +1,357 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "description": "This is a sample server for a fitness app.",
+      "version": "1.0.0",
+      "title": "Gym Workout API"
+    },
+    "host": "localhost:5000",
+    "basePath": "/",
+    "tags": [
+      {
+        "name": "exercises",
+        "description": "Operations about exercises"
+      },
+      {
+        "name": "auth",
+        "description": "Operations about authentication"
+      }
+    ],
+    "paths": {
+      "/token": {
+        "post": {
+          "tags": ["auth"],
+          "summary": "Get JWT token",
+          "description": "Authenticate user and get a JWT token",
+          "operationId": "getToken",
+          "consumes": ["application/json"],
+          "produces": ["application/json"],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "description": "User credentials",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": ["username", "password"]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "JWT token",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Bearer": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request"
+            },
+            "401": {
+              "description": "Invalid username or password"
+            }
+          }
+        }
+      },
+      "/exercises": {
+        "get": {
+          "tags": ["exercises"],
+          "summary": "Get all exercises or filter by difficulty",
+          "description": "Get a list of exercises, optionally filtered by difficulty",
+          "operationId": "getExercises",
+          "produces": ["application/json"],
+          "parameters": [
+            {
+              "name": "difficulty",
+              "in": "query",
+              "description": "Difficulty level of exercises",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "page",
+              "in": "query",
+              "description": "Page number",
+              "required": false,
+              "type": "integer",
+              "default": 1
+            },
+            {
+              "name": "per_page",
+              "in": "query",
+              "description": "Number of items per page",
+              "required": false,
+              "type": "integer",
+              "default": 5
+            },
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": true,
+              "type": "string",
+              "description": "Bearer token"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "List of exercises",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Exercise"
+                }
+              }
+            },
+            "403": {
+              "description": "Not allowed"
+            }
+          }
+        },
+        "post": {
+          "tags": ["exercises"],
+          "summary": "Create a new exercise",
+          "description": "Add a new exercise to the database",
+          "operationId": "createExercise",
+          "consumes": ["application/json"],
+          "produces": ["application/json"],
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "description": "Exercise object",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "muscle": {
+                    "type": "string"
+                  },
+                  "equipment": {
+                    "type": "string"
+                  },
+                  "difficulty": {
+                    "type": "string"
+                  }
+                },
+                "required": ["name", "type", "muscle", "equipment", "difficulty"]
+              }
+            },
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": true,
+              "type": "string",
+              "description": "Bearer token"
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Exercise created successfully",
+              "schema": {
+                "$ref": "#/definitions/Message"
+              }
+            },
+            "403": {
+              "description": "Not allowed"
+            }
+          }
+        }
+      },
+      "/exercises/{id}": {
+        "get": {
+          "tags": ["exercises"],
+          "summary": "Get exercise by ID",
+          "description": "Retrieve a single exercise by its ID",
+          "operationId": "getExerciseById",
+          "produces": ["application/json"],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "description": "Exercise ID",
+              "required": true,
+              "type": "integer",
+              "format": "int64"
+            },
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": true,
+              "type": "string",
+              "description": "Bearer token"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Exercise details",
+              "schema": {
+                "$ref": "#/definitions/Exercise"
+              }
+            },
+            "404": {
+              "description": "Exercise not found"
+            },
+            "403": {
+              "description": "Not allowed"
+            }
+          }
+        },
+        "put": {
+          "tags": ["exercises"],
+          "summary": "Update exercise",
+          "description": "Update an existing exercise",
+          "operationId": "updateExercise",
+          "consumes": ["application/json"],
+          "produces": ["application/json"],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "description": "Exercise ID",
+              "required": true,
+              "type": "integer",
+              "format": "int64"
+            },
+            {
+              "name": "body",
+              "in": "body",
+              "description": "Exercise object",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "muscle": {
+                    "type": "string"
+                  },
+                  "equipment": {
+                    "type": "string"
+                  },
+                  "difficulty": {
+                    "type": "string"
+                  }
+                },
+                "required": ["name", "type", "muscle", "equipment", "difficulty"]
+              }
+            },
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": true,
+              "type": "string",
+              "description": "Bearer token"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Exercise updated successfully",
+              "schema": {
+                "$ref": "#/definitions/Message"
+              }
+            },
+            "403": {
+              "description": "Not allowed"
+            }
+          }
+        },
+        "delete": {
+          "tags": ["exercises"],
+          "summary": "Delete exercise",
+          "description": "Delete an exercise by its ID",
+          "operationId": "deleteExercise",
+          "produces": ["application/json"],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "description": "Exercise ID",
+              "required": true,
+              "type": "integer",
+              "format": "int64"
+            },
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": true,
+              "type": "string",
+              "description": "Bearer token"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Exercise deleted successfully",
+              "schema": {
+                "$ref": "#/definitions/Message"
+              }
+            },
+            "403": {
+              "description": "Not allowed"
+            },
+            "401": {
+              "description": "Admin access required"
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "Exercise": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "muscle": {
+            "type": "string"
+          },
+          "equipment": {
+            "type": "string"
+          },
+          "difficulty": {
+            "type": "string"
+          }
+        },
+        "required": ["name", "type", "muscle", "equipment", "difficulty"]
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }  
